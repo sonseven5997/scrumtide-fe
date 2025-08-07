@@ -1,18 +1,20 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import { User } from "../_models/auth";
+import { persist, createJSONStorage } from "zustand/middleware";
+import { User } from "../_types/auth";
 
 type AuthStoreStates = {
-  accessToken: string | null;
+  token: string | null;
   user: User | null;
 };
 
 type AuthStoreActions = {
-  setAccessToken: (accessToken: string) => void;
+  setToken: (accessToken: string) => void;
+  reset: () => void;
+  setUser: (user: User) => void;
 };
 
 const initialState: AuthStoreStates = {
-  accessToken: null,
+  token: null,
   user: null,
 };
 
@@ -20,10 +22,14 @@ export const useAuthStore = create<AuthStoreStates & AuthStoreActions>()(
   persist(
     (set) => ({
       ...initialState,
-      setAccessToken: (accessToken: string) => set({ accessToken }),
+      setToken: (accessToken: string) => set({ token: accessToken }),
       setUser: (user: User) => set({ user }),
       reset: () => set(initialState),
     }),
-    { name: "auth" }
+    {
+      name: "auth",
+      storage: createJSONStorage(() => localStorage),
+      skipHydration: true,
+    }
   )
 );
