@@ -6,17 +6,28 @@ import { useRouter, useSearchParams } from "next/navigation";
 export default function LoginPage() {
   const [form] = Form.useForm();
   const router = useRouter();
-  const searchParams = useSearchParams().toString();
+  const searchParams = useSearchParams();
   const onRegister = () => {
-    router.push(`/auth/register?${searchParams}`);
+    router.push(`/auth/register?${searchParams.toString()}`);
   };
   const onGuest = () => {
-    router.push(`/auth/login-as-guest?${searchParams}`);
+    router.push(`/auth/login-as-guest?${searchParams.toString()}`);
+  };
+
+  const onLogin = () => {
+    const redirect = searchParams.get("redirect");
+    if (!redirect) return router.push("/");
+    router.push(redirect);
   };
 
   return (
     <div className="h-screen w-screen fixed justify-center items-center flex md:flex-row flex-col gap-4 p-4">
-      <Form layout="vertical" className="md:w-2/3 w-full" form={form}>
+      <Form
+        layout="vertical"
+        className="sm:w-1/2 w-full"
+        form={form}
+        onFinish={onLogin}
+      >
         <Form.Item name="email" label="Email" required>
           <Input />
         </Form.Item>
